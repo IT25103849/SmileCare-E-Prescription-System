@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Prescription Audit Log | SmileCare</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          th:href="@{/css/style.css}">
+
+</head>
+
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+
+<main class="container page-container py-5">
+
+    <!-- HEADER -->
+    <div class="action-bar mb-4">
+
+        <div>
+
+            <div class="page-subtitle">
+                Prescription Audit Trail
+            </div>
+
+            <h1 class="page-title"
+                th:text="'Prescription #' + ${prescription.id}">
+
+                Prescription Audit
+
+            </h1>
+
+            <div class="page-subtitle">
+                View important actions performed on this prescription.
+            </div>
+
+        </div>
+
+
+        <a th:href="@{/prescriptions/{id}(id=${prescription.id})}"
+           class="btn btn-light-custom">
+
+            ← Back to Prescription
+
+        </a>
+
+    </div>
+
+
+    <!-- SUMMARY -->
+    <div class="main-card mb-4">
+
+        <div class="card-section">
+
+            <div class="info-grid">
+
+                <div class="info-item">
+
+                    <div class="info-label">
+                        Prescription
+                    </div>
+
+                    <div class="info-value"
+                         th:text="'#' + ${prescription.id}">
+                    </div>
+
+                </div>
+
+
+                <div class="info-item">
+
+                    <div class="info-label">
+                        Patient
+                    </div>
+
+                    <div class="info-value"
+                         th:text="'Patient ' + ${prescription.patientId}">
+                    </div>
+
+                </div>
+
+
+                <div class="info-item">
+
+                    <div class="info-label">
+                        Dentist
+                    </div>
+
+                    <div class="info-value"
+                         th:text="'Dentist ' + ${prescription.dentistId}">
+                    </div>
+
+                </div>
+
+
+                <div class="info-item">
+
+                    <div class="info-label">
+                        Current Status
+                    </div>
+
+
+                    <span th:if="${prescription.status == 'DRAFT'}"
+                          class="status-badge status-draft">
+
+                        DRAFT
+
+                    </span>
+
+
+                    <span th:if="${prescription.status == 'ISSUED'}"
+                          class="status-badge status-issued">
+
+                        ISSUED
+
+                    </span>
+
+
+                    <span th:if="${prescription.status == 'CANCELLED'}"
+                          class="status-badge status-cancelled">
+
+                        CANCELLED
+
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- AUDIT TABLE -->
+    <div class="main-card">
+
+        <!-- EMPTY -->
+        <div class="empty-state"
+             th:if="${#lists.isEmpty(auditLogs)}">
+
+            <div class="empty-icon">
+                A
+            </div>
+
+            <h5>
+                No audit events
+            </h5>
+
+            <p class="mb-0">
+                Prescription actions will appear here.
+            </p>
+
+        </div>
+
+
+        <div class="table-container"
+             th:unless="${#lists.isEmpty(auditLogs)}">
+
+            <table class="table custom-table">
+
+                <thead>
+
+                <tr>
+
+                    <th>
+                        Date / Time
+                    </th>
+
+                    <th>
+                        Action
+                    </th>
+
+                    <th>
+                        User
+                    </th>
+
+                    <th>
+                        Details
+                    </th>
+
+                </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                <tr th:each="log : ${auditLogs}">
+
+                    <td th:text="${#temporals.format(
+                    log.actionAt,
+                    'dd MMM yyyy, hh:mm:ss a'
+                    )}">
+                    </td>
+
+
+                    <td>
+
+                        <strong th:text="${log.action}">
+                        </strong>
+
+                    </td>
+
+
+                    <td th:text="${log.actorUsername}">
+                    </td>
+
+
+                    <td th:text="${log.details}">
+                    </td>
+
+                </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</main>
+
+</body>
+</html>

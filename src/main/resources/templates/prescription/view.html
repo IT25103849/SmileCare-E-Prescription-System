@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Prescription Details | SmileCare</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          th:href="@{/css/style.css}">
+
+</head>
+
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+
+<main class="container page-container py-5">
+
+
+    <!-- SUCCESS -->
+    <div class="alert alert-success success-alert"
+         th:if="${successMessage != null}">
+
+        <strong>
+            Success!
+        </strong>
+
+        <span th:text="${successMessage}">
+        </span>
+
+    </div>
+
+
+    <!-- HEADER -->
+    <div class="action-bar mb-4">
+
+        <div>
+
+            <div class="page-subtitle">
+                Prescription Details
+            </div>
+
+            <h1 class="page-title"
+                th:text="'Prescription #' + ${prescription.id}">
+
+                Prescription
+
+            </h1>
+
+        </div>
+
+
+        <div class="d-flex gap-2 flex-wrap">
+
+            <!-- EDIT -->
+            <a th:if="${canManage && prescription.status == 'DRAFT'}"
+               th:href="@{/prescriptions/{id}/edit(id=${prescription.id})}"
+               class="btn btn-outline-primary">
+
+                Edit Draft
+
+            </a>
+
+
+            <!-- PDF -->
+            <a th:if="${prescription.status == 'ISSUED'}"
+               th:href="@{/prescriptions/{id}/pdf(id=${prescription.id})}"
+               class="btn btn-primary">
+
+                Download PDF
+
+            </a>
+
+
+            <!-- AUDIT -->
+            <a th:if="${canAudit}"
+               th:href="@{/prescriptions/{id}/audit(id=${prescription.id})}"
+               class="btn btn-light-custom">
+
+                Audit Log
+
+            </a>
+
+
+            <!-- PATIENT BACK -->
+            <a th:if="${isPatient}"
+               th:href="@{/prescriptions/my}"
+               class="btn btn-light-custom">
+
+                ← My History
+
+            </a>
+
+
+            <!-- STAFF BACK -->
+            <a th:unless="${isPatient}"
+               th:href="@{/prescriptions}"
+               class="btn btn-light-custom">
+
+                ← Back to List
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- INFO -->
+    <div class="main-card mb-4">
+
+        <div class="card-section">
+
+            <div class="section-heading">
+
+                <div class="section-number">
+                    1
+                </div>
+
+                <div>
+
+                    <h2 class="section-title">
+                        Prescription Information
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <div class="info-grid">
+
+                <div class="info-item">
+
+                    <div class="info-label">
+                        Patient
+                    </div>
+
+                    <div class="info-value"
+                         th:text="'Patient ' + ${prescription.patientId}">
+                    </div>
+
+                </div>
+
+
+                <div class="info-item">
+
+                    <div class="info-label">
+                        Dentist
+                    </div>
+
+                    <div class="info-value"
+                         th:text="'Dentist ' + ${prescription.dentistId}">
+                    </div>
+
+                </div>
+
+
+                <div class="info-item">
+
+                    <div class="info-label">
+                        Visit
+                    </div>
+
+                    <div class="info-value"
+                         th:text="${prescription.visitId != null
+                         ? 'Visit ' + prescription.visitId
+                         : '-'}">
+                    </div>
+
+                </div>
+
+
+                <div class="info-item">
+
+                    <div class="info-label">
+                        Date
+                    </div>
+
+                    <div class="info-value"
+                         th:text="${#temporals.format(
+                         prescription.prescriptionDate,
+                         'dd MMM yyyy, hh:mm a'
+                         )}">
+                    </div>
+
+                </div>
+
+
+                <div class="info-item">
+
+                    <div class="info-label">
+                        Status
+                    </div>
+
+
+                    <span th:if="${prescription.status == 'DRAFT'}"
+                          class="status-badge status-draft">
+
+                        DRAFT
+
+                    </span>
+
+
+                    <span th:if="${prescription.status == 'ISSUED'}"
+                          class="status-badge status-issued">
+
+                        ISSUED
+
+                    </span>
+
+
+                    <span th:if="${prescription.status == 'CANCELLED'}"
+                          class="status-badge status-cancelled">
+
+                        CANCELLED
+
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- MEDICINES -->
+    <div class="main-card mb-4">
+
+        <div class="card-section pb-0">
+
+            <div class="section-heading">
+
+                <div class="section-number">
+                    2
+                </div>
+
+                <div>
+
+                    <h2 class="section-title">
+                        Prescribed Medicines
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="table-container">
+
+            <table class="table custom-table">
+
+                <thead>
+
+                <tr>
+
+                    <th>#</th>
+
+                    <th>Medicine</th>
+
+                    <th>Strength</th>
+
+                    <th>Form</th>
+
+                    <th>Dosage</th>
+
+                    <th>Frequency</th>
+
+                    <th>Duration</th>
+
+                    <th>Instructions</th>
+
+                </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                <tr th:each="item, stat : ${prescription.items}">
+
+                    <td th:text="${stat.count}">
+                    </td>
+
+
+                    <td>
+                        <strong th:text="${item.medicine.medicineName}">
+                        </strong>
+                    </td>
+
+
+                    <td th:text="${item.medicine.strength != null
+                    ? item.medicine.strength
+                    : '-'}">
+                    </td>
+
+
+                    <td th:text="${item.medicine.form != null
+                    ? item.medicine.form
+                    : '-'}">
+                    </td>
+
+
+                    <td th:text="${item.dosage}">
+                    </td>
+
+
+                    <td th:text="${item.frequency}">
+                    </td>
+
+
+                    <td th:text="${item.duration}">
+                    </td>
+
+
+                    <td th:text="${item.instructions != null
+                    && !item.instructions.isBlank()
+                    ? item.instructions
+                    : '-'}">
+                    </td>
+
+                </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- NOTES -->
+    <div class="main-card mb-4"
+         th:if="${prescription.notes != null
+         && !prescription.notes.isBlank()}">
+
+        <div class="card-section">
+
+            <h2 class="section-title mb-3">
+                Additional Notes
+            </h2>
+
+            <div class="notes-box"
+                 th:text="${prescription.notes}">
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- DENTIST ACTIONS -->
+    <div class="main-card"
+         th:if="${canManage}">
+
+        <div class="card-section">
+
+            <div class="action-bar">
+
+                <div>
+
+                    <h2 class="section-title mb-1">
+                        Prescription Actions
+                    </h2>
+
+                    <div class="section-description">
+                        Issued prescriptions cannot be edited.
+                    </div>
+
+                </div>
+
+
+                <div class="d-flex gap-2 flex-wrap">
+
+                    <!-- ISSUE -->
+                    <form th:if="${prescription.status == 'DRAFT'}"
+                          th:action="@{/prescriptions/{id}/issue(id=${prescription.id})}"
+                          method="post">
+
+                        <button type="submit"
+                                class="btn btn-success"
+                                onclick="return confirm('Are you sure you want to issue this prescription?')">
+
+                            Issue Prescription
+
+                        </button>
+
+                    </form>
+
+
+                    <!-- CANCEL -->
+                    <form th:if="${prescription.status != 'CANCELLED'}"
+                          th:action="@{/prescriptions/{id}/cancel(id=${prescription.id})}"
+                          method="post">
+
+                        <button type="submit"
+                                class="btn btn-outline-danger"
+                                onclick="return confirm('Are you sure you want to cancel this prescription?')">
+
+                            Cancel Prescription
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+
+</body>
+</html>

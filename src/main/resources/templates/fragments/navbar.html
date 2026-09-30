@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+
+<nav th:fragment="navbar"
+     class="navbar smilecare-navbar">
+
+  <div class="container page-container">
+
+    <div class="navbar-content">
+
+      <!-- BRAND -->
+      <a class="navbar-brand m-0"
+         th:href="@{/}">
+
+        <div class="brand-box">
+
+          <div class="brand-logo">
+            SC
+          </div>
+
+          <div>
+
+            <div class="brand-name">
+              SmileCare
+            </div>
+
+            <div class="brand-module">
+              E-Prescription Management
+            </div>
+
+          </div>
+
+        </div>
+
+      </a>
+
+
+      <!-- RIGHT SIDE -->
+      <div class="navbar-right"
+           th:if="${currentUsername != null}">
+
+        <!-- DENTIST / RECEPTIONIST -->
+        <a th:if="${isDentist == true || isReceptionist == true}"
+           th:href="@{/prescriptions}"
+           class="navbar-menu-link">
+
+          Prescriptions
+
+        </a>
+
+
+        <!-- DENTIST CREATE -->
+        <a th:if="${isDentist == true}"
+           th:href="@{/prescriptions/create}"
+           class="navbar-menu-link">
+
+          + Create
+
+        </a>
+
+
+        <!-- PATIENT -->
+        <a th:if="${isPatient == true}"
+           th:href="@{/prescriptions/my}"
+           class="navbar-menu-link">
+
+          My Prescriptions
+
+        </a>
+
+
+        <div class="navbar-divider"></div>
+
+
+        <!-- USER INFO -->
+        <div class="navbar-user">
+
+          <div class="navbar-user-icon">
+
+                        <span th:text="${#strings.substring(currentUsername, 0, 1)}">
+                            U
+                        </span>
+
+          </div>
+
+
+          <div class="navbar-user-details">
+
+            <div class="navbar-username"
+                 th:text="${currentUsername}">
+
+              username
+
+            </div>
+
+
+            <div class="navbar-role"
+                 th:text="${currentRole}">
+
+              ROLE
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- LOGOUT -->
+        <form th:action="@{/logout}"
+              method="post"
+              class="logout-form">
+
+          <button type="submit"
+                  class="btn btn-logout">
+
+            Logout
+
+          </button>
+
+        </form>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</nav>
+
+</body>
+
+</html>

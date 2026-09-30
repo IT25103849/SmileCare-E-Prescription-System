@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>E-Prescriptions | SmileCare</title>
+
+    <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+            rel="stylesheet">
+
+    <link
+            rel="stylesheet"
+            th:href="@{/css/style.css}">
+
+</head>
+
+<body>
+
+
+<!-- =====================================================
+     SHARED NAVBAR
+     ===================================================== -->
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+
+<!-- =====================================================
+     PAGE
+     ===================================================== -->
+
+<main class="container page-container py-5">
+
+
+    <!-- HEADER -->
+
+    <div class="action-bar mb-4">
+
+        <div>
+
+            <h1 class="page-title">
+                E-Prescriptions
+            </h1>
+
+            <div class="page-subtitle">
+                View and manage patient prescriptions.
+            </div>
+
+        </div>
+
+
+        <a th:if="${canCreate == true}"
+           th:href="@{/prescriptions/create}"
+           class="btn btn-primary">
+
+            + Create Prescription
+
+        </a>
+
+    </div>
+
+
+    <!-- SUCCESS MESSAGE -->
+
+    <div class="alert alert-success success-alert"
+         th:if="${successMessage != null}">
+
+        <strong>
+            Success!
+        </strong>
+
+        <span th:text="${successMessage}">
+        </span>
+
+    </div>
+
+
+    <!-- =================================================
+         PRESCRIPTION CARD
+         ================================================= -->
+
+    <div class="main-card">
+
+
+        <!-- EMPTY STATE -->
+
+        <div class="empty-state"
+             th:if="${#lists.isEmpty(prescriptions)}">
+
+            <div class="empty-icon">
+                Rx
+            </div>
+
+            <h5>
+                No prescriptions yet
+            </h5>
+
+            <p class="mb-0">
+                No prescription records were found.
+            </p>
+
+        </div>
+
+
+        <!-- =================================================
+             TABLE
+             ================================================= -->
+
+        <div class="table-container"
+             th:if="${!#lists.isEmpty(prescriptions)}">
+
+            <table class="table custom-table">
+
+                <thead>
+
+                <tr>
+
+                    <th>
+                        Prescription
+                    </th>
+
+                    <th>
+                        Patient
+                    </th>
+
+                    <th>
+                        Dentist
+                    </th>
+
+                    <th>
+                        Visit
+                    </th>
+
+                    <th>
+                        Date
+                    </th>
+
+                    <th>
+                        Status
+                    </th>
+
+                    <th class="text-end">
+                        Action
+                    </th>
+
+                </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                <tr th:each="prescription : ${prescriptions}">
+
+
+                    <!-- PRESCRIPTION ID -->
+
+                    <td>
+
+                        <strong th:text="${'#' + prescription.id}">
+                            #1
+                        </strong>
+
+                    </td>
+
+
+                    <!-- PATIENT -->
+
+                    <td>
+
+                        <a th:href="@{/prescriptions/patient/{patientId}
+                        (patientId=${prescription.patientId})}"
+                           th:text="${'Patient ' + prescription.patientId}">
+
+                            Patient
+
+                        </a>
+
+                    </td>
+
+
+                    <!-- DENTIST -->
+
+                    <td th:text="${'Dentist ' + prescription.dentistId}">
+
+                        Dentist
+
+                    </td>
+
+
+                    <!-- VISIT -->
+
+                    <td>
+
+                        <span th:if="${prescription.visitId != null}"
+                              th:text="${'Visit ' + prescription.visitId}">
+                        </span>
+
+                        <span th:if="${prescription.visitId == null}">
+                            -
+                        </span>
+
+                    </td>
+
+
+                    <!-- DATE -->
+
+                    <td th:text="${#temporals.format(
+                            prescription.prescriptionDate,
+                            'dd MMM yyyy, hh:mm a'
+                            )}">
+
+                        Date
+
+                    </td>
+
+
+                    <!-- STATUS -->
+
+                    <td>
+
+
+                        <span th:if="${prescription.status == 'DRAFT'}"
+                              class="status-badge status-draft">
+
+                            DRAFT
+
+                        </span>
+
+
+                        <span th:if="${prescription.status == 'ISSUED'}"
+                              class="status-badge status-issued">
+
+                            ISSUED
+
+                        </span>
+
+
+                        <span th:if="${prescription.status == 'CANCELLED'}"
+                              class="status-badge status-cancelled">
+
+                            CANCELLED
+
+                        </span>
+
+
+                    </td>
+
+
+                    <!-- ACTION -->
+
+                    <td class="text-end">
+
+                        <a th:href="@{/prescriptions/{id}
+                        (id=${prescription.id})}"
+                           class="btn btn-sm btn-outline-primary">
+
+                            View
+
+                        </a>
+
+                    </td>
+
+
+                </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</main>
+
+</body>
+
+</html>
