@@ -3,28 +3,34 @@ package com.smilecare.config;
 import com.smilecare.entity.AppUser;
 import com.smilecare.repository.AppUserRepository;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
-
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
 import org.springframework.stereotype.Component;
 
 @Component
-public class DataInitializer
-        implements CommandLineRunner {
+@Profile("dev")
+public class DataInitializer implements CommandLineRunner {
 
     private final AppUserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+
+    @Value("${DEMO_DENTIST_PASSWORD}")
+    private String dentistPassword;
+
+    @Value("${DEMO_PATIENT_PASSWORD}")
+    private String patientPassword;
+
+    @Value("${DEMO_RECEPTIONIST_PASSWORD}")
+    private String receptionistPassword;
 
     public DataInitializer(
             AppUserRepository userRepository,
             PasswordEncoder passwordEncoder) {
 
-        this.userRepository =
-                userRepository;
-
-        this.passwordEncoder =
-                passwordEncoder;
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -32,7 +38,7 @@ public class DataInitializer
 
         createUser(
                 "dentist1",
-                "Dentist123!",
+                dentistPassword,
                 "DENTIST",
                 null,
                 1L
@@ -40,7 +46,7 @@ public class DataInitializer
 
         createUser(
                 "patient1",
-                "Patient123!",
+                patientPassword,
                 "PATIENT",
                 1L,
                 null
@@ -48,7 +54,7 @@ public class DataInitializer
 
         createUser(
                 "reception1",
-                "Reception123!",
+                receptionistPassword,
                 "RECEPTIONIST",
                 null,
                 null
@@ -62,20 +68,16 @@ public class DataInitializer
             Long patientId,
             Long dentistId) {
 
-        if (userRepository
-                .existsByUsername(username)) {
-
+        if (userRepository.existsByUsername(username)) {
             return;
         }
 
-        AppUser user =
-                new AppUser();
+        AppUser user = new AppUser();
 
         user.setUsername(username);
 
         user.setPasswordHash(
-                passwordEncoder
-                        .encode(password)
+                passwordEncoder.encode(password)
         );
 
         user.setRole(role);
